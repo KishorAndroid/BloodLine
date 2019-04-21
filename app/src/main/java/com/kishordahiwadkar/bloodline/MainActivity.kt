@@ -4,9 +4,6 @@ import android.app.Activity
 import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.os.Bundle
-import android.view.View
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProviders
@@ -17,8 +14,10 @@ import com.google.android.gms.auth.api.credentials.Credential
 import com.google.android.gms.auth.api.credentials.HintRequest
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.api.GoogleApiClient
+import com.google.firebase.auth.FirebaseAuth
 import com.kishordahiwadkar.bloodline.databinding.ActivityMainBinding
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.layout_registration_field.*
 
 
 const val RESOLVE_HINT = 1987
@@ -35,6 +34,8 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.ConnectionCallbacks,
     }
 
     private lateinit var apiClient: GoogleApiClient
+    private lateinit var avd: AnimatedVectorDrawableCompat
+    private lateinit var auth: FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,36 +46,47 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.ConnectionCallbacks,
             requestHint()
         }
 
-        ArrayAdapter.createFromResource(
-            this,
-            R.array.blood_groups,
-            android.R.layout.simple_spinner_item
-        ).also { adapter ->
-            // Specify the layout to use when the list of choices appears
-            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-            // Apply the adapter to the spinner
-            spinnerBloodGroup.adapter = adapter
+        setCardioImage()
+        startCardioAnimation()
+
+        // Initialize Firebase Auth
+        auth = FirebaseAuth.getInstance()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        // Check if user is signed in (non-null) and update UI accordingly.
+        val currentUser = auth.currentUser
+        if (currentUser != null) {
+            viewModel.layoutSwitcher.set(REGISTRATION_PAGE)
+        } else {
+            signInAnonymously()
         }
+    }
 
-        spinnerBloodGroup.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onNothingSelected(p0: AdapterView<*>?) {
-
-            }
-
-            override fun onItemSelected(adapterView: AdapterView<*>?, view: View?, position: Int, id: Long) {
-
+    private fun signInAnonymously() {
+        auth.signInAnonymously().addOnCompleteListener(this) { task ->
+            if (task.isSuccessful) {
+                viewModel.layoutSwitcher.set(REGISTRATION_PAGE)
+            } else {
+                //TODO Handle task unsuccessful state
             }
         }
+    }
 
-        val avd = AnimatedVectorDrawableCompat.create(this, R.drawable.avd_anim)
+    private fun setCardioImage() {
+        avd = AnimatedVectorDrawableCompat.create(this, R.drawable.avd_anim)!!
         avd?.registerAnimationCallback(object : Animatable2Compat.AnimationCallback() {
             override fun onAnimationEnd(drawable: Drawable?) {
                 super.onAnimationEnd(drawable)
-                imageCardioGraph.post { avd?.start() }
+                imageCardioGraph.post { startCardioAnimation() }
             }
         })
         imageCardioGraph.setImageDrawable(avd)
-        avd?.start()
+    }
+
+    private fun startCardioAnimation() {
+        (imageCardioGraph.drawable as Animatable2Compat).start()
     }
 
     private fun getCredentialApiClient() {
@@ -107,8 +119,7 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.ConnectionCallbacks,
         if (requestCode == RESOLVE_HINT) {
             if (resultCode == Activity.RESULT_OK) {
                 val credential = data!!.getParcelableExtra<Credential>(Credential.EXTRA_KEY)
-                // credential.getId(); <-- E.164 format phone number on 10.2.+ devices
-                inputPhoneNumberEdit.setText(credential.id)
+                inputPhoneNumberEdit.setText(credential.id.substring(3))
             }
         }
     }

@@ -26,14 +26,14 @@
 					android:valueFrom="0"
 					android:valueTo="1"
 					android:valueType="floatType"
-					android:interpolator="@android:interpolator/fast_out_slow_in"/>
+					android:interpolator="@android:anim/linear_interpolator"/>
                 <objectAnimator
                     android:propertyName="trimPathStart"
                     android:duration="2000"
                     android:valueFrom="0"
                     android:valueTo="1"
                     android:valueType="floatType"
-                    android:interpolator="@android:interpolator/fast_out_slow_in"/>
+                    android:interpolator="@android:anim/linear_interpolator"/>
 			</set>
 		</aapt:attr>
 	</target>
