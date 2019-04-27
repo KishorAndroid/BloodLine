@@ -39,6 +39,27 @@
 			app:layout_constraintBottom_toBottomOf="@id/imageLogo"
 			app:layout_constraintStart_toStartOf="@id/imageLogo"/>
 
+		<TextView
+			android:id="@+id/textStatusMessage"
+			app:layout_constraintTop_toBottomOf="@id/imageLogo"
+			app:layout_constraintStart_toStartOf="@id/imageLogo"
+			app:layout_constraintEnd_toEndOf="@id/imageLogo"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:fontFamily="sans-serif"
+			android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
+			android:text="@{vm.statusMessage}"/>
+
+		<ImageView
+			app:layout_constraintTop_toTopOf="@id/imageLogo"
+			app:layout_constraintBottom_toBottomOf="@id/imageLogo"
+			app:layout_constraintStart_toEndOf="parent"
+			android:layout_marginEnd="16dp"
+			android:id="@+id/imageProfile"
+			android:src="@drawable/ic_person_outline"
+			android:layout_width="48dp"
+			android:layout_height="48dp"/>
+
 		<FrameLayout
 			android:id="@+id/frameRegistration"
 			app:layout_constraintTop_toBottomOf="parent"
@@ -47,6 +68,17 @@
 
 			<include
 				layout="@layout/layout_registration_field"
+				bind:vm="@{vm}"/>
+		</FrameLayout>
+
+		<FrameLayout
+			android:id="@+id/frameRequest"
+			app:layout_constraintTop_toBottomOf="parent"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content">
+
+			<include
+				layout="@layout/layout_request_field"
 				bind:vm="@{vm}"/>
 		</FrameLayout>
 	</androidx.constraintlayout.widget.ConstraintLayout>

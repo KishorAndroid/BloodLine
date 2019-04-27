@@ -2,7 +2,8 @@
     <string name="app_name">BloodLine</string>
 	<string name="enter_full_name">Enter Donor Name</string>
 	<string name="enter_phone_number">Enter Phone Number</string>
-	<string name="select_your_blood_group">Select Your Blood Group</string>
+	<string name="select_your_blood_group">Your Blood Group</string>
+	<string name="select_required_blood_group">Required Blood Group</string>
 
 	<string-array name="blood_groups">
 		<item>---</item>

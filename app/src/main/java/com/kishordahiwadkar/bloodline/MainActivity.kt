@@ -14,7 +14,6 @@ import com.google.android.gms.auth.api.credentials.Credential
 import com.google.android.gms.auth.api.credentials.HintRequest
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.api.GoogleApiClient
-import com.google.firebase.auth.FirebaseAuth
 import com.kishordahiwadkar.bloodline.databinding.ActivityMainBinding
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.layout_registration_field.*
@@ -35,42 +34,35 @@ class MainActivity : AppCompatActivity(), GoogleApiClient.ConnectionCallbacks,
 
     private lateinit var apiClient: GoogleApiClient
     private lateinit var avd: AnimatedVectorDrawableCompat
-    private lateinit var auth: FirebaseAuth
+    private var isProfileOpenedByUser = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding.vm = viewModel
+        lifecycle.addObserver(viewModel)
+
         getCredentialApiClient()
 
         inputPhoneNumberEdit.setOnClickListener {
             requestHint()
         }
 
+        imageProfile.setOnClickListener {
+            viewModel.showRegistrationPage()
+            isProfileOpenedByUser = true
+        }
+
         setCardioImage()
         startCardioAnimation()
-
-        // Initialize Firebase Auth
-        auth = FirebaseAuth.getInstance()
     }
 
-    override fun onStart() {
-        super.onStart()
-        // Check if user is signed in (non-null) and update UI accordingly.
-        val currentUser = auth.currentUser
-        if (currentUser != null) {
-            viewModel.layoutSwitcher.set(REGISTRATION_PAGE)
+    override fun onBackPressed() {
+        if (isProfileOpenedByUser) {
+            viewModel.showRequestPage()
+            isProfileOpenedByUser = false
+            return
         } else {
-            signInAnonymously()
-        }
-    }
-
-    private fun signInAnonymously() {
-        auth.signInAnonymously().addOnCompleteListener(this) { task ->
-            if (task.isSuccessful) {
-                viewModel.layoutSwitcher.set(REGISTRATION_PAGE)
-            } else {
-                //TODO Handle task unsuccessful state
-            }
+            super.onBackPressed()
         }
     }
 

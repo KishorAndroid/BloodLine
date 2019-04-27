@@ -22,6 +22,9 @@ fun switchLayout(constraintLayout: ConstraintLayout, pageNumber: Int) {
         SPLASH_SCREEN_PAGE -> {
             constraint2.clone(constraintLayout.context, R.layout.activity_main)
         }
+        REQUEST_PAGE -> {
+            constraint2.clone(constraintLayout.context, R.layout.layout_request)
+        }
     }
 
     TransitionManager.beginDelayedTransition(constraintLayout)
